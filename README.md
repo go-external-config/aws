@@ -13,6 +13,7 @@ With Secrets Manager, you can configure an automatic rotation schedule for your 
 cmd/app/main.go
 
     import (
+        "github.com/go-errr/go/err"
     	aws "github.com/go-external-config/aws/env"
     	"github.com/go-external-config/go/env"
     )
@@ -20,10 +21,11 @@ cmd/app/main.go
     var _ = env.Instance().WithPropertySource(aws.NewAwsSecretsManagerPropertySource())
 
     func main() {
+        defer err.Recover()
     	fmt.Println("db.pass: " + env.Value[string]("${db.pass}"))
     }
 
-cmd/config/application.yaml
+config/application.yaml
 
     db:
       pass: AWSSM:db-pass-secret-name
