@@ -2,6 +2,7 @@ package env
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -42,7 +43,8 @@ func (this *AwsSecretsManagerPropertySource) HasProperty(key string) bool {
 func (this *AwsSecretsManagerPropertySource) Property(key string) string {
 	for _, source := range this.environment.PropertySources() {
 		if source.Properties() != nil && source.HasProperty(key) {
-			return this.getSecretValue(source.Property(key)[len(AWSSM):])
+			secretName := fmt.Sprint(this.environment.ResolveRequiredPlaceholders(source.Property(key)[len(AWSSM):]))
+			return this.getSecretValue(secretName)
 		}
 	}
 	panic(err.NewIllegalArgumentException("No value present for " + key))
