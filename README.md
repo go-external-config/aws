@@ -1,3 +1,7 @@
+# AwsParameterStorePropertySource
+
+Parameter Store provides secure, hierarchical storage for configuration data management and secrets management. You can store data such as passwords, database strings, Amazon Machine Image (AMI) IDs, and license codes as parameter values. You can store values as plain text or encrypted data. You can reference Systems Manager parameters in your scripts, commands, SSM documents, and configuration and automation workflows by using the unique name that you specified when you created the parameter. ([more](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html))
+
 # AwsSecretsManagerPropertySource
 
 AWS Secrets Manager helps you manage, retrieve, and rotate database credentials, application credentials, OAuth tokens, API keys, and other secrets throughout their lifecycles. Many AWS services store and use secrets in Secrets Manager.
@@ -18,14 +22,18 @@ cmd/app/main.go
     	"github.com/go-external-config/go/env"
     )
 
-    var _ = env.Instance().WithPropertySource(aws.NewAwsSecretsManagerPropertySource())
+    var _ = env.Instance().
+    	WithPropertySource(aws.NewAwsParameterStorePropertySource()).
+    	WithPropertySource(aws.NewAwsSecretsManagerPropertySource())
 
     func main() {
         defer err.Recover()
+    	fmt.Println("db.name: " + env.Value[string]("${db.name}"))
     	fmt.Println("db.pass: " + env.Value[string]("${db.pass}"))
     }
 
 config/application.yaml
 
     db:
-      pass: AWSSM:db-pass-secret-name
+      name: AWSPARAM:db-name-parameter-name
+      pass: AWSSECRET:db-pass-secret-name

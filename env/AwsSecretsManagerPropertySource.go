@@ -14,7 +14,7 @@ import (
 	"github.com/go-external-config/go/util/optional"
 )
 
-const AWSSM = "AWSSM:"
+const AWSSECRET = "AWSSECRET:"
 
 type AwsSecretsManagerPropertySource struct {
 	environment *env.Environment
@@ -35,7 +35,7 @@ func (this *AwsSecretsManagerPropertySource) Name() string {
 func (this *AwsSecretsManagerPropertySource) HasProperty(key string) bool {
 	for _, source := range this.environment.PropertySources() {
 		if source.Properties() != nil && source.HasProperty(key) {
-			return strings.HasPrefix(source.Property(key), AWSSM)
+			return strings.HasPrefix(source.Property(key), AWSSECRET)
 		}
 	}
 	return false
@@ -44,7 +44,7 @@ func (this *AwsSecretsManagerPropertySource) HasProperty(key string) bool {
 func (this *AwsSecretsManagerPropertySource) Property(key string) string {
 	for _, source := range this.environment.PropertySources() {
 		if source.Properties() != nil && source.HasProperty(key) {
-			secretName := fmt.Sprint(this.environment.ResolveRequiredPlaceholders(source.Property(key)[len(AWSSM):]))
+			secretName := fmt.Sprint(this.environment.ResolveRequiredPlaceholders(source.Property(key)[len(AWSSECRET):]))
 			return this.getSecretValue(secretName)
 		}
 	}
@@ -55,7 +55,7 @@ func (this *AwsSecretsManagerPropertySource) getSecretValue(secretName string) s
 	result := optional.OfCommaErr(this.client.GetSecretValue(context.Background(), &secretsmanager.GetSecretValueInput{
 		SecretId:     aws.String(secretName),
 		VersionStage: aws.String("AWSCURRENT"),
-	})).OrElsePanic("Cannot get AWS secret")
+	})).OrElsePanic("Cannot get AWS secret " + secretName)
 	if result.SecretString != nil {
 		return *result.SecretString
 	}
