@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 	"github.com/go-errr/go/err"
 	"github.com/go-external-config/go/env"
+	"github.com/go-external-config/go/lang"
 	"github.com/go-external-config/go/util/optional"
 )
 
@@ -55,6 +56,7 @@ func (this *AwsSecretsManagerPropertySource) getSecretValue(secretName string) s
 		SecretId:     aws.String(secretName),
 		VersionStage: aws.String("AWSCURRENT"),
 	})).OrElsePanic("Cannot get AWS secret")
+	lang.AssertState(result.SecretString != nil, "AWS secret %s is not string", secretName)
 	return *result.SecretString
 }
 
