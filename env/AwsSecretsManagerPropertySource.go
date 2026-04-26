@@ -14,7 +14,8 @@ import (
 	"github.com/go-external-config/go/util/optional"
 )
 
-const AWSSECRET = "AWSSECRET:"
+const AWSSECRET_KEY_PREFIX = "AWSSECRET."
+const AWSSECRET_VALUE_PREFIX = "AWSSECRET:"
 
 type AwsSecretsManagerPropertySource struct {
 	environment *env.Environment
@@ -33,18 +34,25 @@ func (this *AwsSecretsManagerPropertySource) Name() string {
 }
 
 func (this *AwsSecretsManagerPropertySource) HasProperty(key string) bool {
+	if strings.HasPrefix(key, AWSSECRET_KEY_PREFIX) {
+		return true
+	}
 	for _, source := range this.environment.PropertySources() {
 		if source.Properties() != nil && source.HasProperty(key) {
-			return strings.HasPrefix(source.Property(key), AWSSECRET)
+			return strings.HasPrefix(source.Property(key), AWSSECRET_VALUE_PREFIX)
 		}
 	}
 	return false
 }
 
 func (this *AwsSecretsManagerPropertySource) Property(key string) string {
+	if strings.HasPrefix(key, AWSSECRET_KEY_PREFIX) {
+		parameterName := fmt.Sprint(this.environment.ResolveRequiredPlaceholders(key[len(AWSSECRET_KEY_PREFIX):]))
+		return this.getSecretValue(parameterName)
+	}
 	for _, source := range this.environment.PropertySources() {
 		if source.Properties() != nil && source.HasProperty(key) {
-			secretName := fmt.Sprint(this.environment.ResolveRequiredPlaceholders(source.Property(key)[len(AWSSECRET):]))
+			secretName := fmt.Sprint(this.environment.ResolveRequiredPlaceholders(source.Property(key)[len(AWSSECRET_VALUE_PREFIX):]))
 			return this.getSecretValue(secretName)
 		}
 	}

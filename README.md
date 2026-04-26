@@ -28,8 +28,12 @@ cmd/app/main.go
 
     func main() {
         defer err.Recover()
+
     	fmt.Println("db.name: " + env.Value[string]("${db.name}"))
     	fmt.Println("db.pass: " + env.Value[string]("${db.pass}"))
+
+        // fmt.Println("db-name: " + env.Value[string]("${AWSPARAM.db-name-parameter-name}"))
+        // fmt.Println("db-pass: " + env.Value[string]("${AWSSECRET.db-pass-secret-name}"))
     }
 
 config/application.yaml

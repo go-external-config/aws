@@ -13,7 +13,8 @@ import (
 	"github.com/go-external-config/go/util/optional"
 )
 
-const AWSPARAM = "AWSPARAM:"
+const AWSPARAM_KEY_PREFIX = "AWSPARAM."
+const AWSPARAM_VALUE_PREFIX = "AWSPARAM:"
 
 type AwsParameterStorePropertySource struct {
 	environment *env.Environment
@@ -32,18 +33,25 @@ func (this *AwsParameterStorePropertySource) Name() string {
 }
 
 func (this *AwsParameterStorePropertySource) HasProperty(key string) bool {
+	if strings.HasPrefix(key, AWSPARAM_KEY_PREFIX) {
+		return true
+	}
 	for _, source := range this.environment.PropertySources() {
 		if source.Properties() != nil && source.HasProperty(key) {
-			return strings.HasPrefix(source.Property(key), AWSPARAM)
+			return strings.HasPrefix(source.Property(key), AWSPARAM_VALUE_PREFIX)
 		}
 	}
 	return false
 }
 
 func (this *AwsParameterStorePropertySource) Property(key string) string {
+	if strings.HasPrefix(key, AWSPARAM_KEY_PREFIX) {
+		parameterName := fmt.Sprint(this.environment.ResolveRequiredPlaceholders(key[len(AWSPARAM_KEY_PREFIX):]))
+		return this.getParameterValue(parameterName)
+	}
 	for _, source := range this.environment.PropertySources() {
 		if source.Properties() != nil && source.HasProperty(key) {
-			parameterName := fmt.Sprint(this.environment.ResolveRequiredPlaceholders(source.Property(key)[len(AWSPARAM):]))
+			parameterName := fmt.Sprint(this.environment.ResolveRequiredPlaceholders(source.Property(key)[len(AWSPARAM_VALUE_PREFIX):]))
 			return this.getParameterValue(parameterName)
 		}
 	}
