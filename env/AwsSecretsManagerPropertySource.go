@@ -14,8 +14,8 @@ import (
 	"github.com/go-external-config/go/util/optional"
 )
 
-const AWSSECRET_KEY_PREFIX = "AWSSECRET."
-const AWSSECRET_VALUE_PREFIX = "AWSSECRET:"
+const AWSSECRET_KEY_PREFIX = "aws-secret."
+const AWSSECRET_VALUE_PREFIX = "aws-secret:"
 
 type AwsSecretsManagerPropertySource struct {
 	environment *env.Environment

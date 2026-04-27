@@ -32,12 +32,12 @@ cmd/app/main.go
     	fmt.Println("db.name: " + env.Value[string]("${db.name}"))
     	fmt.Println("db.pass: " + env.Value[string]("${db.pass}"))
 
-        // fmt.Println("db-name: " + env.Value[string]("${AWSPARAM.db-name-parameter-name}"))
-        // fmt.Println("db-pass: " + env.Value[string]("${AWSSECRET.db-pass-secret-name}"))
+        // fmt.Println("db-name: " + env.Value[string]("${aws-param.db-name-parameter-name}"))
+        // fmt.Println("db-pass: " + env.Value[string]("${aws-secret.db-pass-secret-name}"))
     }
 
 config/application.yaml
 
     db:
-      name: AWSPARAM:db-name-parameter-name
-      pass: AWSSECRET:db-pass-secret-name
+      name: aws-param:db-name-parameter-name
+      pass: aws-secret:db-pass-secret-name

@@ -13,8 +13,8 @@ import (
 	"github.com/go-external-config/go/util/optional"
 )
 
-const AWSPARAM_KEY_PREFIX = "AWSPARAM."
-const AWSPARAM_VALUE_PREFIX = "AWSPARAM:"
+const AWSPARAM_KEY_PREFIX = "aws-param."
+const AWSPARAM_VALUE_PREFIX = "aws-param:"
 
 type AwsParameterStorePropertySource struct {
 	environment *env.Environment
