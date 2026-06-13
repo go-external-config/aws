@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.41.6
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.68.5
 	github.com/go-errr/go v1.0.12
-	github.com/go-external-config/go v1.0.35
+	github.com/go-external-config/go v1.0.36
 )
 
 require (
