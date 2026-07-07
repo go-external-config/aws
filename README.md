@@ -16,28 +16,32 @@ With Secrets Manager, you can configure an automatic rotation schedule for your 
 
 cmd/app/main.go
 
-    import (
-        "github.com/go-errr/go/err"
-    	aws "github.com/go-external-config/aws/env"
-    	"github.com/go-external-config/go/env"
-    )
+```go
+import (
+    "github.com/go-errr/go/err"
+    aws "github.com/go-external-config/aws/env"
+    "github.com/go-external-config/go/env"
+)
 
-    var _ = env.Instance().
-    	WithPropertySource(aws.NewAwsParameterStorePropertySource()).
-    	WithPropertySource(aws.NewAwsSecretsManagerPropertySource())
+var _ = env.Instance().
+    WithPropertySource(aws.NewAwsParameterStorePropertySource()).
+    WithPropertySource(aws.NewAwsSecretsManagerPropertySource())
 
-    func main() {
-        defer err.Recover()
+func main() {
+    defer err.Recover()
 
-    	fmt.Println("db.name: " + env.Value[string]("${db.name}"))
-    	fmt.Println("db.pass: " + env.Value[string]("${db.pass}"))
+    fmt.Println("db.name: " + env.Value[string]("${db.name}"))
+    fmt.Println("db.pass: " + env.Value[string]("${db.pass}"))
 
-        // fmt.Println("db-name: " + env.Value[string]("${aws-param.db-name-parameter-name}"))
-        // fmt.Println("db-pass: " + env.Value[string]("${aws-secret.db-pass-secret-name}"))
-    }
+    // fmt.Println("db-name: " + env.Value[string]("${aws-param.db-name-parameter-name}"))
+    // fmt.Println("db-pass: " + env.Value[string]("${aws-secret.db-pass-secret-name}"))
+}
+```
 
 config/application.yaml
 
-    db:
-      name: aws-param:db-name-parameter-name
-      pass: aws-secret:db-pass-secret-name
+```yaml
+db:
+    name: aws-param:db-name-parameter-name
+    pass: aws-secret:db-pass-secret-name
+```
