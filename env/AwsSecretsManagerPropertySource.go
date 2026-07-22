@@ -11,7 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 	"github.com/go-errr/go/err"
 	"github.com/go-external-config/go/env"
-	"github.com/go-external-config/go/util/optional"
+	"github.com/go-jang/go/util/optional"
 )
 
 const AWSSECRET_KEY_PREFIX = "aws-secret."
