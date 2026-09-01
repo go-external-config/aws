@@ -17,13 +17,11 @@ const AWSPARAM_KEY_PREFIX = "aws-param."
 const AWSPARAM_VALUE_PREFIX = "aws-param:"
 
 type AwsParameterStorePropertySource struct {
-	environment *env.Environment
-	client      *ssm.Client
+	client *ssm.Client
 }
 
 func NewAwsParameterStorePropertySource() *AwsParameterStorePropertySource {
 	ps := &AwsParameterStorePropertySource{}
-	ps.environment = env.Instance()
 	ps.client = ps.newClient()
 	return ps
 }
@@ -36,7 +34,7 @@ func (this *AwsParameterStorePropertySource) HasProperty(key string) bool {
 	if strings.HasPrefix(key, AWSPARAM_KEY_PREFIX) {
 		return true
 	}
-	for _, source := range this.environment.PropertySources() {
+	for _, source := range env.PropertySources() {
 		if source.Properties() != nil && source.HasProperty(key) {
 			return strings.HasPrefix(source.Property(key), AWSPARAM_VALUE_PREFIX)
 		}
@@ -46,12 +44,12 @@ func (this *AwsParameterStorePropertySource) HasProperty(key string) bool {
 
 func (this *AwsParameterStorePropertySource) Property(key string) string {
 	if strings.HasPrefix(key, AWSPARAM_KEY_PREFIX) {
-		parameterName := fmt.Sprint(this.environment.ResolveRequiredPlaceholders(key[len(AWSPARAM_KEY_PREFIX):]))
+		parameterName := fmt.Sprint(env.ResolveRequiredPlaceholders(key[len(AWSPARAM_KEY_PREFIX):]))
 		return this.getParameterValue(parameterName)
 	}
-	for _, source := range this.environment.PropertySources() {
+	for _, source := range env.PropertySources() {
 		if source.Properties() != nil && source.HasProperty(key) {
-			parameterName := fmt.Sprint(this.environment.ResolveRequiredPlaceholders(source.Property(key)[len(AWSPARAM_VALUE_PREFIX):]))
+			parameterName := fmt.Sprint(env.ResolveRequiredPlaceholders(source.Property(key)[len(AWSPARAM_VALUE_PREFIX):]))
 			return this.getParameterValue(parameterName)
 		}
 	}

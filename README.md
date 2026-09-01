@@ -19,13 +19,9 @@ cmd/app/main.go
 ```go
 import (
     "github.com/go-errr/go/err"
-    aws "github.com/go-external-config/aws/env"
+    _ "github.com/go-external-config/aws"
     "github.com/go-external-config/go/env"
 )
-
-var _ = env.Instance().
-    WithPropertySource(aws.NewAwsParameterStorePropertySource()).
-    WithPropertySource(aws.NewAwsSecretsManagerPropertySource())
 
 func main() {
     defer err.Recover()

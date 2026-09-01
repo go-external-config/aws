@@ -18,13 +18,11 @@ const AWSSECRET_KEY_PREFIX = "aws-secret."
 const AWSSECRET_VALUE_PREFIX = "aws-secret:"
 
 type AwsSecretsManagerPropertySource struct {
-	environment *env.Environment
-	client      *secretsmanager.Client
+	client *secretsmanager.Client
 }
 
 func NewAwsSecretsManagerPropertySource() *AwsSecretsManagerPropertySource {
 	ps := &AwsSecretsManagerPropertySource{}
-	ps.environment = env.Instance()
 	ps.client = ps.newClient()
 	return ps
 }
@@ -37,7 +35,7 @@ func (this *AwsSecretsManagerPropertySource) HasProperty(key string) bool {
 	if strings.HasPrefix(key, AWSSECRET_KEY_PREFIX) {
 		return true
 	}
-	for _, source := range this.environment.PropertySources() {
+	for _, source := range env.PropertySources() {
 		if source.Properties() != nil && source.HasProperty(key) {
 			return strings.HasPrefix(source.Property(key), AWSSECRET_VALUE_PREFIX)
 		}
@@ -47,12 +45,12 @@ func (this *AwsSecretsManagerPropertySource) HasProperty(key string) bool {
 
 func (this *AwsSecretsManagerPropertySource) Property(key string) string {
 	if strings.HasPrefix(key, AWSSECRET_KEY_PREFIX) {
-		parameterName := fmt.Sprint(this.environment.ResolveRequiredPlaceholders(key[len(AWSSECRET_KEY_PREFIX):]))
+		parameterName := fmt.Sprint(env.ResolveRequiredPlaceholders(key[len(AWSSECRET_KEY_PREFIX):]))
 		return this.getSecretValue(parameterName)
 	}
-	for _, source := range this.environment.PropertySources() {
+	for _, source := range env.PropertySources() {
 		if source.Properties() != nil && source.HasProperty(key) {
-			secretName := fmt.Sprint(this.environment.ResolveRequiredPlaceholders(source.Property(key)[len(AWSSECRET_VALUE_PREFIX):]))
+			secretName := fmt.Sprint(env.ResolveRequiredPlaceholders(source.Property(key)[len(AWSSECRET_VALUE_PREFIX):]))
 			return this.getSecretValue(secretName)
 		}
 	}
